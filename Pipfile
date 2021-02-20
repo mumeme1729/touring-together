@@ -11,6 +11,7 @@ djangorestframework-simplejwt = "==4.6.0"
 djangorestframework = "*"
 djoser = "*"
 django-cors-headers = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.8"

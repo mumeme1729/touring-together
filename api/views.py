@@ -27,9 +27,22 @@ class MyProfileListView(generics.ListAPIView):
 class PlanViewSet(viewsets.ModelViewSet):
     queryset = Plan.objects.all()
     serializer_class = serializers.PlanSerializer
-
+    
     def perform_create(self, serializer):
         serializer.save(userPlan=self.request.user)
+
+
+class PlanListView(generics.ListAPIView):
+    queryset = Plan.objects.all()
+    serializer_class = serializers.PlanSerializer
+    #検索結果
+    def get_queryset(self):
+        queryset = Plan.objects.all()
+        destination = self.request.query_params.get('destination',None)
+        
+        if destination is not None:
+            queryset =queryset.filter(destination__icontains=destination)
+        return queryset
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
@@ -38,9 +51,18 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(userComment=self.request.user)
 
+#フォロー
 class RelationshipViewSet(viewsets.ModelViewSet):
     queryset = Relationship.objects.all()
     serializer_class =serializers.RelationshipSerializer
 
     def perform_create(self,serializer):
         serializer.save(userFollow=self.request.user)
+
+#フォロワーのリスト
+class FollowerViewSet(generics.ListAPIView):
+    queryset = Relationship.objects.all()
+    serializer_class = serializers.RelationshipSerializer
+    #検索結果
+    def get_queryset(self):
+        return self.queryset.filter(following=self.request.user)

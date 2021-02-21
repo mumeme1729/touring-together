@@ -24,7 +24,7 @@ class PlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Plan
         fields = ('id', 'destination', 'date','userPlan' ,'created_on', 'text',)
-        extra_kwargs = {'userPost': {'read_only': True}}
+        extra_kwargs = {'userPlan': {'read_only': True}}
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,7 +32,8 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'userComment','plan')
         extra_kwargs = {'userComment': {'read_only': True}}
 
-class  RelationshipSerializer(serializers.ModelSerializer):
+class RelationshipSerializer(serializers.ModelSerializer):
     class Meta:
         model= Relationship
-        fields=('id','follow','follower')
+        fields=('id','userFollow','following')
+        extra_kwargs={'userFollow': {'read_only': True}}

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.conf import settings
-
+import uuid
 
 def upload_avatar_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -24,6 +24,7 @@ class UserManager(BaseUserManager):
         return user
 
 class User(AbstractBaseUser, PermissionsMixin):
+    id=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     email = models.EmailField(max_length=50, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -54,8 +55,8 @@ class Profile(models.Model):
         return self.nickName
 
 class Relationship(models.Model):
-    follow = models.ForeignKey(User, related_name='follows',on_delete=models.CASCADE)
-    follower = models.ForeignKey(User, related_name='followers',on_delete=models.CASCADE)
+    userFollow = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='userFollow',on_delete=models.CASCADE)
+    following = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='following',blank=True,on_delete=models.CASCADE)
 
 
 class Plan(models.Model):

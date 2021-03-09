@@ -43,7 +43,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Profile(models.Model):
+    id=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     nickName = models.CharField(max_length=20)
+    text=models.CharField(max_length=200)
     userProfile = models.OneToOneField(
         settings.AUTH_USER_MODEL, related_name='userProfile',
         on_delete=models.CASCADE
@@ -55,11 +57,13 @@ class Profile(models.Model):
         return self.nickName
 
 class Relationship(models.Model):
+    id=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     userFollow = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='userFollow',on_delete=models.CASCADE)
     following = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='following',blank=True,on_delete=models.CASCADE)
 
 
 class Plan(models.Model):
+    id=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     destination = models.CharField(max_length=50)
     date=models.DateField()
     userPlan = models.ForeignKey(
@@ -74,6 +78,7 @@ class Plan(models.Model):
 
 
 class Comment(models.Model):
+    id=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     text = models.CharField(max_length=100)
     userComment = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='userComment',

@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import Profile,Plan,Comment,Relationship
+from django_filters import rest_framework as filters
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,8 +17,15 @@ class ProfileSerializer(serializers.ModelSerializer):
     created_on = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
     class Meta:
         model=Profile
-        fields = ('id', 'nickName', 'userProfile', 'created_on', 'img')
+        fields = ('id', 'nickName','text','userProfile', 'created_on', 'img')
         extra_kwargs = {'userProfile': {'read_only': True}}
+
+class SelectProfileSerializer(filters.FilterSet):
+    userProfile=filters.CharFilter(lookup_expr='exact')
+    class Meta:
+        model=Profile
+        fields=('userProfile',)
+
 
 class PlanSerializer(serializers.ModelSerializer):
     created_on = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
@@ -26,14 +34,41 @@ class PlanSerializer(serializers.ModelSerializer):
         fields = ('id', 'destination', 'date','userPlan' ,'created_on', 'text',)
         extra_kwargs = {'userPlan': {'read_only': True}}
 
+class SearchPlanSerializer(filters.FilterSet):
+    destination=filters.CharFilter(lookup_expr='contains')
+    date=filters.DateFilter(lookup_expr='gte')
+    class Meta:
+        model=Plan
+        fields=('destination','date')
+
+
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'text', 'userComment','plan')
         extra_kwargs = {'userComment': {'read_only': True}}
 
+class GetCommentSerializer(filters.FilterSet):
+    plan=filters.CharFilter(lookup_expr='exact')
+    class Meta:
+        model=Comment
+        fields=('plan',)
+
 class RelationshipSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model= Relationship
         fields=('id','userFollow','following')
         extra_kwargs={'userFollow': {'read_only': True}}
+
+class FollowingSerializer(filters.FilterSet):
+    userFollow=filters.CharFilter(lookup_expr='exact')
+    class Meta:
+        model=Relationship
+        fields=('userFollow',)
+
+class FollowerSerializer(filters.FilterSet):
+    following=filters.CharFilter(lookup_expr='exact')
+    class Meta:
+        model=Relationship
+        fields=('following',)

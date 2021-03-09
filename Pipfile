@@ -12,6 +12,8 @@ djangorestframework = "*"
 djoser = "*"
 django-cors-headers = "*"
 pillow = "*"
+django-crispy-forms = "*"
+django-filter = "*"
 
 [requires]
 python_version = "3.8"

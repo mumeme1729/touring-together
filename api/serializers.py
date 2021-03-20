@@ -18,7 +18,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=Profile
-        fields = ('id', 'nickName','text','userProfile', 'created_on', 'img')
+        fields = ('id', 'nickName','text','userProfile', 'created_on', 'img','base')
         extra_kwargs = {'userProfile': {'read_only': True}}
     
 class SelectProfileSerializer(filters.FilterSet):
@@ -32,7 +32,7 @@ class PlanSerializer(serializers.ModelSerializer):
     created_on = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
     class Meta:
         model = Plan
-        fields = ('id', 'destination', 'date','userPlan' ,'created_on', 'text',)
+        fields = ('id', 'destination', 'date','userPlan' ,'created_on', 'text','img')
         extra_kwargs = {'userPlan': {'read_only': True}}
 
 class SearchPlanSerializer(filters.FilterSet):
@@ -86,7 +86,7 @@ class PlanProfileSerializer(serializers.ModelSerializer):
     profile=serializers.SerializerMethodField()
     class Meta:
         model =Plan
-        fields = ('id', 'destination', 'date','userPlan' ,'created_on', 'text','profile')
+        fields = ('id', 'destination', 'date','userPlan' ,'created_on', 'text','img','profile')
     
     def get_profile(self,obj):
         try:

@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'iplp-8t4(vlrritsy8xr3kr7gs9-r)xn*aftxl(m07+949jhsu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -109,8 +109,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'd95p7q6uq4podo',
+        'HOST':'ec2-3-233-43-103.compute-1.amazonaws.com',
+        'PORT':5432,
+        'USER':'xjkhurjvjqwmvb',
+        'PASSWORD':'ac30ae1f241ee3a2928db79c80f6a9df817364330fde978c8c9370dab551a292'
     }
 }
 

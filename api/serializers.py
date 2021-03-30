@@ -57,7 +57,6 @@ class GetCommentSerializer(filters.FilterSet):
         fields=('plan',)
 
 class RelationshipSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model= Relationship
         fields=('id','userFollow','following')
@@ -72,7 +71,6 @@ class RelationfilterSerializer(filters.FilterSet):
 
 class FollowingSerializer(filters.FilterSet):
     userFollow=filters.CharFilter(lookup_expr='exact')
-    
     class Meta:
         model=Relationship
         fields=('userFollow',)

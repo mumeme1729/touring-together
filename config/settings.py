@@ -27,7 +27,7 @@ SECRET_KEY = 'iplp-8t4(vlrritsy8xr3kr7gs9-r)xn*aftxl(m07+949jhsu'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Profile,Plan,Comment,Relationship,Notification
+from .models import Profile,Plan,Comment,Relationship,Notification,Prefectures,Likes
 from django_filters import rest_framework as filters
 
 class UserSerializer(serializers.ModelSerializer):
@@ -32,15 +32,16 @@ class PlanSerializer(serializers.ModelSerializer):
     created_on = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
     class Meta:
         model = Plan
-        fields = ('id', 'destination', 'date','userPlan' ,'created_on', 'text','img')
+        fields = ('id','title','destination','prefecture','departure','date','userPlan' ,'created_on', 'text','img',)
         extra_kwargs = {'userPlan': {'read_only': True}}
 
 class SearchPlanSerializer(filters.FilterSet):
     destination=filters.CharFilter(lookup_expr='contains')
     date=filters.DateFilter(lookup_expr='gte')
+    prefecture=filters.CharFilter(lookup_expr='exact')
     class Meta:
         model=Plan
-        fields=('destination','date')
+        fields=('destination','date','prefecture')
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -82,11 +83,19 @@ class FollowerSerializer(filters.FilterSet):
         model=Relationship
         fields=('following',)
 
+class LikesSerializer(serializers.ModelSerializer):
+    created_on = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
+    class Meta:
+        model= Likes
+        fields=('id','plan','userLikes','created_on')
+        extra_kwargs={'userFollow': {'read_only': True}}
+
 class PlanProfileSerializer(serializers.ModelSerializer):
     profile=serializers.SerializerMethodField()
+    likes=serializers.SerializerMethodField()
     class Meta:
         model =Plan
-        fields = ('id', 'destination', 'date','userPlan' ,'created_on', 'text','img','profile')
+        fields = ('id','title','destination','prefecture','departure','date','userPlan' ,'created_on', 'text','img','profile','likes')
     
     def get_profile(self,obj):
         try:
@@ -95,10 +104,19 @@ class PlanProfileSerializer(serializers.ModelSerializer):
         except:
             profile_abstruct_contents=None
             return profile_abstruct_contents
+    
+    def get_likes(self,obj):
+        try:
+            likes_abstruct_contents = LikesSerializer(Likes.objects.filter(plan=obj.id),many=True).data
+            return likes_abstruct_contents
+        except:
+            likes_abstruct_contents=None
+            return likes_abstruct_contents
+
 
 class CommentProfileSerializer(serializers.ModelSerializer):
      profile=serializers.SerializerMethodField()
-
+     
      class Meta:
         model = Comment
         fields = ('id', 'text', 'userComment','plan','profile')
@@ -134,5 +152,11 @@ class NotificationProfileSerializer(serializers.ModelSerializer):
              return profile_abstruct_contents
 
 
+# 県
+class PrefecturesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Prefectures
+        fields='__all__'
 
 
+    

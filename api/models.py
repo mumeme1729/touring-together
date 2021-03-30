@@ -12,6 +12,7 @@ def upload_avatar_path(instance, filename):
 def upload_plan_path(instance, filename):
     ext = filename.split('.')[-1]
     return '/'.join(['plan', str(instance.userPlan.id)+str(".")+str(ext)])
+    
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
         if not email:
@@ -50,7 +51,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Profile(models.Model):
     id=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
-    nickName = models.CharField(max_length=20)
+    nickName = models.CharField(max_length=20,blank=True)
     text=models.CharField(max_length=200,blank=True,null=True)
     userProfile = models.OneToOneField(
         settings.AUTH_USER_MODEL, related_name='userProfile',
@@ -68,11 +69,19 @@ class Relationship(models.Model):
     userFollow = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='userFollow',on_delete=models.CASCADE)
     following = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='following',blank=True,on_delete=models.CASCADE)
 
+class Prefectures(models.Model):
+    name=models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
 
 class Plan(models.Model):
     id=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
+    title=models.CharField(max_length=100)
+    prefecture=models.ForeignKey(Prefectures,on_delete=models.CASCADE)
     destination = models.CharField(max_length=50,db_index=True)
     date=models.DateField()
+    departure=models.CharField(blank=True,max_length=30)
     userPlan = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='userPlan',
         on_delete=models.CASCADE
@@ -80,10 +89,17 @@ class Plan(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     text=models.CharField(max_length=150,blank=True, null=True,)
     img = models.ImageField(blank=True, null=True, upload_to=upload_plan_path)
-
     def __str__(self):
         return self.destination
 
+class Likes(models.Model):
+    id=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
+    plan=models.ForeignKey(Plan,on_delete=models.CASCADE,related_name='planlikes')
+    userLikes=models.ForeignKey(settings.AUTH_USER_MODEL,related_name='userLike',on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together=('plan','userLikes')
 
 class Comment(models.Model):
     id=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)

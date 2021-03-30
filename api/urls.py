@@ -14,6 +14,7 @@ router.register('selectprofile',views.SelectProfileViewSet)
 router.register('getcomment',views.GetCommentViewSet)
 router.register('relation',views.RelationViewSet)
 router.register('notification',views.NotificationViewSet)
+router.register('likes',views.LikesViewSet)
 
 urlpatterns = [
     path('register/', views.CreateUserView.as_view(), name='register'),
@@ -26,4 +27,7 @@ urlpatterns = [
     path('userplan/',views.GetUserPlanSet.as_view(),name='userplan'),
     path('commentplan/',views.PlanCommnetView.as_view(),name='commentplan'),
     path('usernotification/',views.NotificationProfile.as_view(),name='usernotification'),
+    path('prefectures/',views.PrefectureViewSet.as_view(),name='prefectures'),
+    path('countlikes/',views.LikesView.as_view(),name='countlikes'),
+    path('likedplans/',views. LikedPlanView.as_view(),name='likedplans'),
 ]

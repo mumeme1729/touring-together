@@ -1,10 +1,13 @@
-from rest_framework import generics
+from rest_framework import generics,pagination
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from . import serializers
 from django.db.models import Q
-from .models import Profile,Plan,Comment,Relationship,Notification
+from .models import Profile,Plan,Comment,Relationship,Notification,Prefectures,Likes
 
+
+class StandardResultsSetPagination(pagination.PageNumberPagination):
+    page_size = 10
 class CreateUserView(generics.CreateAPIView):
     serializer_class = serializers.UserSerializer
     permission_classes = (AllowAny,)
@@ -32,6 +35,8 @@ class SelectProfileViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ProfileSerializer
     filter_class =serializers.SelectProfileSerializer
 
+
+
 #プランを取得
 class PlanViewSet(viewsets.ModelViewSet):
     queryset = Plan.objects.all().order_by('-created_on')
@@ -39,6 +44,29 @@ class PlanViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(userPlan=self.request.user)
+
+#いいね
+class LikesViewSet(viewsets.ModelViewSet):
+    queryset = Likes.objects.all().order_by('-created_on')
+    serializer_class =serializers.LikesSerializer
+    def perform_create(self,serializer):
+        serializer.save()
+
+class LikesView(generics.ListAPIView):
+    serializer_class=serializers.LikesSerializer
+
+    def get_queryset(self):
+        queryset=Likes.objects.filter(plan=self.request.query_params.get('id'))
+        return queryset
+        
+    
+
+class PrefectureViewSet(generics.ListAPIView):
+    serializer_class=serializers.PrefecturesSerializer
+
+    def get_queryset(self):
+        queryset=Prefectures.objects.all()
+        return queryset
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -93,16 +121,26 @@ class RelationViewSet(viewsets.ModelViewSet):
 # タイムライン   
 class TimelineView(generics.ListAPIView):
     serializer_class = serializers.PlanProfileSerializer
+    pagination_class = StandardResultsSetPagination
     #検索結果
     def get_queryset(self):
         queryset = Plan.objects.filter(Q(userPlan__following__userFollow=self.request.user)| Q(userPlan=self.request.user)).distinct()
-        return queryset.order_by('-created_on')   
+        return queryset.order_by('-created_on')  
+# いいねしたプラン
+class LikedPlanView(generics.ListAPIView):
+    serializer_class = serializers.PlanProfileSerializer
 
-#サーチ
+    def get_queryset(self):
+        queryset = Plan.objects.filter(planlikes__userLikes=self.request.query_params.get('id')).order_by('-created_on')
+        return queryset
+
+
+#検索
 class SearchPlanViewSet(viewsets.ModelViewSet):
     queryset = Plan.objects.all().order_by('-created_on') 
     serializer_class = serializers.PlanProfileSerializer
     filter_class =serializers.SearchPlanSerializer
+    pagination_class = StandardResultsSetPagination
 
 #コメントを取得
 class GetCommentViewSet(viewsets.ModelViewSet):
@@ -114,7 +152,7 @@ class GetCommentViewSet(viewsets.ModelViewSet):
 
 ## 自分の投稿 ##
 class GetUserPlanSet(generics.ListAPIView):
-    serializer_class =serializers.PlanSerializer
+    serializer_class =serializers.PlanProfileSerializer
 
     def get_queryset(self):
         queryset=Plan.objects.filter(userPlan=self.request.query_params.get('id'))
@@ -129,6 +167,7 @@ class PlanCommnetView(generics.ListAPIView):
         return queryset.order_by('-created_on') 
         #return queryset
 
+###########    通知   ##############
 class NotificationViewSet(viewsets.ModelViewSet):
     queryset=Notification.objects.all().order_by('-created_on')
     serializer_class =serializers.NotificationSerializer
@@ -138,7 +177,9 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
 class NotificationProfile(generics.ListAPIView):
     serializer_class =serializers.NotificationProfileSerializer
-
+    pagination_class = StandardResultsSetPagination
     def get_queryset(self):
         queryset=Notification.objects.filter(receive=self.request.user).exclude(send=self.request.user)
         return queryset.order_by('-created_on')
+
+

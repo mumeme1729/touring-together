@@ -21,14 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'iplp-8t4(vlrritsy8xr3kr7gs9-r)xn*aftxl(m07+949jhsu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -157,27 +151,46 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-#STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_URL = '/static/'
 
-AWS_ACCESS_KEY_ID = 'AKIA3ZLK7KEXS5J4ECND'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'toringtogether'
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-}
-AWS_LOCATION = 'static'
-AWS_DEFAULT_ACL = None
-STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
+DEBUG = False
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-DEFAULT_FILE_STORAGE = 'api.storage_backends.MediaStorage'
 
+try:
+    from .local_settings import *
+except ImportError:
+    pass
+
+#ローカル設定
+if DEBUG:
+    ALLOWED_HOSTS=['*']
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+else:
+    import environ
+    env=environ.Env()
+    env.read_env(os.path.join(BASE_DIR,'.env'))
+    
+    SECRET_KEY =env('SECRET_KEY')
+    ALLOWED_HOSTS=env.list('ALLOWED_HOSTS')
+
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+    AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }
+    AWS_LOCATION = 'static'
+    AWS_DEFAULT_ACL = None
+    STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+
+    DEFAULT_FILE_STORAGE = 'api.storage_backends.MediaStorage'
 
 
 # LOGGING = {

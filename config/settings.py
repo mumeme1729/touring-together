@@ -104,7 +104,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'toringtogether'
+        'NAME': 'toringtogether',
         'HOST':'202.182.117.211',
         'PORT':5432,
         'USER':'postgres',

@@ -57,7 +57,7 @@ MIDDLEWARE = [
 
 ######    react  ######
 CORS_ORIGIN_WHITELIST = [
-    "https://mumeme1729.github.io/"
+    "https://mumeme1729.github.io/toringtogether/"
 ]
 
 REST_FRAMEWORK = {

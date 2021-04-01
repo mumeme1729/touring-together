@@ -105,10 +105,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django_db',
+        'NAME': 'toring_together_db',
         'HOST':'localhost',
         'PORT':'',
-        'USER':'mimimi_db',
+        'USER':'mimimi',
         'PASSWORD':'skzsk14speed47'
     }
 }

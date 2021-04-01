@@ -57,7 +57,7 @@ MIDDLEWARE = [
 
 ######    react  ######
 CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000"
+    "https://mumeme1729.github.io/"
 ]
 
 REST_FRAMEWORK = {
